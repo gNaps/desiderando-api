@@ -3,7 +3,7 @@ import { User } from "../models/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { sendMail } from "../services/mailService";
-//import { PasswordToken } from "src/models/passwordToken";
+import { PasswordToken } from "../models/passwordToken";
 import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
 
@@ -63,38 +63,38 @@ const authController = async (fastify: FastifyInstance) => {
     }
   });
 
-  // // Send a request to reset password
-  // fastify.post(
-  //   "/recovery-password",
-  //   async (req: FastifyRequest, rep: FastifyReply) => {
-  //     try {
-  //       const { email } = req.body as any;
+  // Send a request to reset password
+  fastify.post(
+    "/recovery-password",
+    async (req: FastifyRequest, rep: FastifyReply) => {
+      try {
+        const { email } = req.body as any;
 
-  //       const user = await User.findOne({
-  //         email,
-  //       });
+        const user = await User.findOne({
+          email,
+        });
 
-  //       const token = await PasswordToken.create({
-  //         email: email,
-  //         user: user.username,
-  //         token: uuidv4(),
-  //       });
+        const token = await PasswordToken.create({
+          email: email,
+          user: user.username,
+          token: uuidv4(),
+        });
 
-  //       if (user) {
-  //         await sendMail({
-  //           to: email,
-  //           subject: "Recovery password Desiderando",
-  //           html: `Hi ${user.username}! Please use this link to recovery
-  //           your password ${token.token}. The link will expire in 2 hours.`,
-  //         });
-  //       }
+        if (user) {
+          await sendMail({
+            to: email,
+            subject: "Recovery password Desiderando",
+            html: `Hi ${user.username}! Please use this link to recovery
+            your password ${token.token}. The link will expire in 2 hours.`,
+          });
+        }
 
-  //       rep.code(200).send();
-  //     } catch (error) {
-  //       rep.code(500).send(error);
-  //     }
-  //   }
-  // );
+        rep.code(200).send();
+      } catch (error) {
+        rep.code(500).send(error);
+      }
+    }
+  );
 
   // // Reset a password
   // fastify.post(

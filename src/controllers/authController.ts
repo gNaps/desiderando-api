@@ -96,28 +96,28 @@ const authController = async (fastify: FastifyInstance) => {
     }
   );
 
-  // // Reset a password
-  // fastify.post(
-  //   "/reset-password",
-  //   async (req: FastifyRequest, rep: FastifyReply) => {
-  //     const {
-  //       token: tokenRequest,
-  //       newPassword: password,
-  //       username,
-  //     } = req.body as any;
-  //     const token = await PasswordToken.findOne({ token: tokenRequest });
+  // Reset a password
+  fastify.post(
+    "/reset-password",
+    async (req: FastifyRequest, rep: FastifyReply) => {
+      const {
+        token: tokenRequest,
+        newPassword: password,
+        username,
+      } = req.body as any;
+      const token = await PasswordToken.findOne({ token: tokenRequest });
 
-  //     if (!token && moment(token.expiredAt).diff(moment(), "minutes") < 0) {
-  //       rep.code(401);
-  //     }
+      if (!token && moment(token.expiredAt).diff(moment(), "minutes") < 0) {
+        rep.code(401);
+      }
 
-  //     const user = await User.findOne({ username });
-  //     user.password = bcrypt.hashSync(password, 8);
-  //     user.save();
+      const user = await User.findOne({ username });
+      user.password = bcrypt.hashSync(password, 8);
+      user.save();
 
-  //     rep.code(200).send();
-  //   }
-  // );
+      rep.code(200).send();
+    }
+  );
 };
 
 export default authController;

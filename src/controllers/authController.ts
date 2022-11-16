@@ -1,9 +1,9 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { User } from "../models/User";
+import { User, PasswordToken } from "../models/User";
+//import { PasswordToken } from "../models/Passwordtoken";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { sendMail } from "../services/mailService";
-import { PasswordToken } from "../models/Passwordtoken";
 import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
 

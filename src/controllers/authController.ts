@@ -3,7 +3,7 @@ import { User } from "../models/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { sendMail } from "../services/mailService";
-import { PasswordToken } from "../models/passwordToken";
+import { PasswordToken } from "src/models/passwordToken";
 import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
 

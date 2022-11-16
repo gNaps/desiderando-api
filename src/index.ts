@@ -33,7 +33,7 @@ server.register(authController, { prefix: "/auth" });
 server.register(friendController, { prefix: "/friends" });
 server.register(userController, { prefix: "/users" });
 
-server.listen({ port: 8080 }, (error: any, address: any) => {
+server.listen({ port: 8080, host: "0.0.0.0" }, (error: any, address: any) => {
   if (error) {
     console.error(error);
     process.exit(1);

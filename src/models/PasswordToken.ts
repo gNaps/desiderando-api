@@ -15,7 +15,7 @@ export const PasswordToken = mongoose.model(
   passwordTokenSchema
 );
 
-export interface IGift {
+export interface IPasswordToken {
   user: string;
   token: string;
   expiredAt: Date;

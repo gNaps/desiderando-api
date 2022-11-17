@@ -2,6 +2,7 @@ import fastify from "fastify";
 import * as dotenv from "dotenv";
 import mongoose from "mongoose";
 import cloudinary from "cloudinary";
+import cors from "@fastify/cors";
 import giftController from "./controllers/giftController";
 import authController from "./controllers/authController";
 import friendController from "./controllers/friendController";
@@ -28,15 +29,20 @@ try {
   api_secret: process.env.API_SECRET,
 });
 
+server.register(cors);
+
 server.register(giftController, { prefix: "/gifts" });
 server.register(authController, { prefix: "/auth" });
 server.register(friendController, { prefix: "/friends" });
 server.register(userController, { prefix: "/users" });
 
-server.listen({ port: 8080, host: "0.0.0.0" }, (error: any, address: any) => {
-  if (error) {
-    console.error(error);
-    process.exit(1);
+server.listen(
+  { port: 8080, host: process.env.ENV_DEVELOP ? "127.0.0.1" : "0.0.0.0" },
+  (error: any, address: any) => {
+    if (error) {
+      console.error(error);
+      process.exit(1);
+    }
+    console.log(`Server running on ${address}`);
   }
-  console.log(`Server running on ${address}`);
-});
+);

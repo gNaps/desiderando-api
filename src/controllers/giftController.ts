@@ -1,7 +1,11 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Gift, IGift } from "../models/Gift";
 import authHandler from "../handlers/authHandler";
-import { deleteImage, uploadImage } from "../services/cloudinaryService";
+import {
+  checkIfBase64,
+  deleteImage,
+  uploadImage,
+} from "../services/cloudinaryService";
 import { User } from "../models/User";
 import * as getSize from "image-size-from-base64";
 
@@ -17,6 +21,38 @@ const giftController = async (fastify: FastifyInstance) => {
           createdBy: user.id,
         }).populate("createdBy", { id: 1, username: 1, email: 1 });
         rep.code(200).send(gifts);
+      } catch (error) {
+        rep.code(500).send(error);
+      }
+    }
+  );
+
+  // Find one desiderio
+  fastify.get(
+    "/:id",
+    { preHandler: [authHandler] },
+    async (req: FastifyRequest, rep: FastifyReply) => {
+      const { user: currentUser } = req as any;
+      const { id } = (req as any).params;
+      try {
+        const user = await User.findById(currentUser.id);
+        const friends = user.friends.map((f: any) => f.user);
+        const gift = await Gift.findById(id).populate("createdBy", {
+          id: 1,
+          username: 1,
+          email: 1,
+        });
+
+        const canRead =
+          gift.createdBy.id === currentUser.id ||
+          friends.some((f) => f.id === gift.createdBy.id);
+
+        if (!canRead) {
+          rep.code(404).send();
+          return;
+        }
+
+        rep.code(200).send(gift);
       } catch (error) {
         rep.code(500).send(error);
       }
@@ -93,14 +129,18 @@ const giftController = async (fastify: FastifyInstance) => {
           return;
         }
 
-        if (gift.image) {
+        if (gift.image && !checkIfBase64(gift.image)) {
           let size = await getSize.default(gift.image);
           if (size >= 2000) {
             rep.code(400).send("Image too big");
             return;
           }
-          await deleteImage(giftToUpdate.image);
+          if (giftToUpdate.image) {
+            await deleteImage(giftToUpdate.image);
+          }
           gift.image = await uploadImage(gift.image, "desiderando/gifts");
+        } else if (!gift.image && giftToUpdate.image) {
+          await deleteImage(giftToUpdate.image);
         }
 
         gift.updatedAt = new Date();

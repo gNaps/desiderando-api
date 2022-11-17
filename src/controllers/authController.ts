@@ -33,6 +33,7 @@ const authController = async (fastify: FastifyInstance) => {
 
       if (!user) {
         rep.code(404).send("User or password incorrect!");
+        return;
       }
 
       const isPasswordValid = bcrypt.compareSync(
@@ -42,6 +43,7 @@ const authController = async (fastify: FastifyInstance) => {
 
       if (!isPasswordValid) {
         rep.code(404).send("User or password incorrect!");
+        return;
       }
 
       const token = jwt.sign(

@@ -14,6 +14,7 @@ const giftSchema = new Schema({
   image: { type: String },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
   giftBy: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+  category: { type: mongoose.Schema.Types.ObjectId, ref: "category" },
 });
 
 export const Gift = mongoose.model("gift", giftSchema);
@@ -32,4 +33,5 @@ export interface IGift {
   image: string;
   createdBy: string;
   giftBy: string;
+  category: string;
 }

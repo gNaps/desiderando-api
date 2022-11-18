@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { User } from "../models/User";
 import authHandler from "../handlers/authHandler";
+import { Gift } from "../models/Gift";
 
 const friendController = async (fastify: FastifyInstance) => {
   // Add a new friend
@@ -102,6 +103,36 @@ const friendController = async (fastify: FastifyInstance) => {
         }
 
         rep.code(200).send(friends);
+      } catch (error) {
+        rep.code(500).send(error);
+      }
+    }
+  );
+
+  // Get a single friend by current user
+  fastify.get(
+    "/:id",
+    { preHandler: [authHandler] },
+    async (req: FastifyRequest, rep: FastifyReply) => {
+      try {
+        const { user } = req as any;
+        const friendId = (req.params as any).id;
+        const { friends } = await User.findOne({
+          _id: user.id,
+        }).populate("friends.user", "username email image");
+
+        const friend = friends.find((f) => f.user.id.toString() === friendId);
+
+        if (!friend) {
+          rep.code(404).send();
+          return;
+        }
+
+        const gifts = await Gift.find({
+          createdBy: friend.user.id,
+        });
+
+        rep.code(200).send({ info: friend, gifts });
       } catch (error) {
         rep.code(500).send(error);
       }

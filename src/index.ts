@@ -7,6 +7,7 @@ import giftController from "./controllers/giftController";
 import authController from "./controllers/authController";
 import friendController from "./controllers/friendController";
 import userController from "./controllers/userController";
+import categoryController from "./controllers/categoryController";
 
 const server = fastify({
   logger: true,
@@ -35,6 +36,7 @@ server.register(giftController, { prefix: "/gifts" });
 server.register(authController, { prefix: "/auth" });
 server.register(friendController, { prefix: "/friends" });
 server.register(userController, { prefix: "/users" });
+server.register(categoryController, { prefix: "/categories" });
 
 server.listen(
   { port: 8080, host: process.env.ENV_DEVELOP ? "127.0.0.1" : "0.0.0.0" },

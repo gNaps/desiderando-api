@@ -4,7 +4,8 @@ const giftSchema = new Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
   price: { type: Number, required: true, default: 0 },
-  location: { type: String },
+  shop: { type: String },
+  website: { type: String },
   tags: { type: [String] },
   createdAt: { type: Date },
   updatedAt: { type: Date },
@@ -21,7 +22,8 @@ export interface IGift {
   name: string;
   description: string;
   price: number;
-  location: string;
+  shop: string;
+  website: string;
   tags: string[];
   createdAt: Date;
   updatedAt: Date;
@@ -29,4 +31,5 @@ export interface IGift {
   giftedAt: Date;
   image: string;
   createdBy: string;
+  giftBy: string;
 }

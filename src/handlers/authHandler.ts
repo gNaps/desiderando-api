@@ -2,9 +2,8 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import jwt from "jsonwebtoken";
 
 const authHandler = (req: FastifyRequest, rep: FastifyReply, next: any) => {
-  const token = req.headers.authorization.replace("Bearer ", "");
-
   try {
+    const token = req.headers.authorization.replace("Bearer ", "");
     const data = jwt.verify(token, process.env.SECRET_KEY_JWT);
     if (data) {
       (req as any).user = { ...(data as any) };

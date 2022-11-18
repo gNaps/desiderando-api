@@ -19,7 +19,7 @@ const giftController = async (fastify: FastifyInstance) => {
       try {
         const gifts = await Gift.find({
           createdBy: user.id,
-        }).populate("createdBy", { id: 1, username: 1, email: 1 });
+        }).populate("createdBy", { id: 1, username: 1, email: 1, image: 1 });
         rep.code(200).send(gifts);
       } catch (error) {
         rep.code(500).send(error);
@@ -37,15 +37,23 @@ const giftController = async (fastify: FastifyInstance) => {
       try {
         const user = await User.findById(currentUser.id);
         const friends = user.friends.map((f: any) => f.user);
-        const gift = await Gift.findById(id).populate("createdBy", {
-          id: 1,
-          username: 1,
-          email: 1,
-        });
+        const gift = await Gift.findById(id)
+          .populate("createdBy", {
+            id: 1,
+            username: 1,
+            email: 1,
+            image: 1,
+          })
+          .populate("giftBy", {
+            id: 1,
+            username: 1,
+            email: 1,
+            image: 1,
+          });
 
         const canRead =
           gift.createdBy.id === currentUser.id ||
-          friends.some((f) => f.id === gift.createdBy.id);
+          friends.some((f) => f.toString() === gift.createdBy.id);
 
         if (!canRead) {
           rep.code(404).send();
@@ -189,7 +197,6 @@ const giftController = async (fastify: FastifyInstance) => {
       try {
         const { id }: any = req.params;
         const { user: currentUser } = req as any;
-        const gift: IGift = req.body as IGift;
         const giftToBooking = await Gift.findById(id);
         const user = await User.findById(currentUser.id);
         const userFriends = user.friends.map((f) => f.user);
@@ -227,7 +234,6 @@ const giftController = async (fastify: FastifyInstance) => {
       try {
         const { id }: any = req.params;
         const { user: currentUser } = req as any;
-        const gift: IGift = req.body as IGift;
         const giftToBooking = await Gift.findById(id);
         const user = await User.findById(currentUser.id);
         const userFriends = user.friends.map((f) => f.user);
